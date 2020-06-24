@@ -2,7 +2,7 @@ package main
 
 type Cell struct {
 	IsChecked bool
-	ByPlayer int
+	ByPlayer  int
 }
 
 func (b *Cell) CheckBox(player int) {
@@ -15,14 +15,14 @@ type Grid struct {
 }
 
 // coords can be A0-2 || B0-2  || C0-2
-func HandlePlay(grid *Grid, line string, cell int, player int) Grid {
+func (grid *Grid) HandlePlay(line string, cell int, player int) Grid {
 	switch line {
-		case "A" :
-			grid.content[0][cell].CheckBox(player)
-		case "B" :
-			grid.content[1][cell].CheckBox(player)
-		case "C" :
-			grid.content[2][cell].CheckBox(player)
+	case "A":
+		grid.content[0][cell].CheckBox(player)
+	case "B":
+		grid.content[1][cell].CheckBox(player)
+	case "C":
+		grid.content[2][cell].CheckBox(player)
 	}
 
 	return *grid
