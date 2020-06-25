@@ -20,6 +20,10 @@ class App extends React.Component {
                 {
                     row,
                     col
+                }, {
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
                 }
             ).then(r => {
                 this.setState({
@@ -35,14 +39,15 @@ class App extends React.Component {
             .then(r => {
                 this.setState({
                     grid: r.data
-                })
+                });
             })
         ;
+        
     }
 
     render() {
         const { grid } = this.state
-
+        console.log(grid);
         return (
             <div className={grid}>
                 {grid != null
