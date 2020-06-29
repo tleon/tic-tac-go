@@ -6,6 +6,12 @@ type Cell struct {
 	ByPlayer  int
 }
 
+// Coords Represent the Cell position
+type Coords struct {
+	Row int
+	Col int
+}
+
 // CheckBox Mark a cell as checked by a player
 func (b *Cell) CheckBox(player int) {
 	b.IsChecked = true
@@ -15,6 +21,7 @@ func (b *Cell) CheckBox(player int) {
 // Grid The complete Grid of Cell
 type Grid struct {
 	content [3][3]Cell
+	cellChecked int
 }
 
 // HandlePlay Modify the grid struct to take in account the last cell checked

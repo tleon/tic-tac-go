@@ -4,7 +4,6 @@ import Cell from "./Cell";
 import {Col, Container, Row} from "react-bootstrap";
 
 class App extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -20,10 +19,6 @@ class App extends React.Component {
                 {
                     row,
                     col
-                }, {
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
                 }
             ).then(r => {
                 this.setState({
@@ -42,14 +37,13 @@ class App extends React.Component {
                 });
             })
         ;
-        
     }
 
     render() {
         const { grid } = this.state
-        console.log(grid);
+
         return (
-            <div className={grid}>
+            <div>
                 {grid != null
                     ? (
                         <div>

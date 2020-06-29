@@ -1,51 +1,65 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
+	"github.com/rs/cors"
 )
 
 var grid Grid
 
-func getGrid(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+func getGrid(w http.ResponseWriter, req *http.Request,  _ httprouter.Params) {
+	if err := json.NewEncoder(w).Encode(grid.content); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func clicked(w http.ResponseWriter, req *http.Request,  _ httprouter.Params) {
+	var coords Coords
+
+	decoder := json.NewDecoder(req.Body)
+	err := decoder.Decode(&coords)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	grid.HandlePlay(coords.Row, coords.Col, 1)
+	grid.cellChecked++
+	if grid.cellChecked <= 8 {
+		makeIAPlay()
+	}
 
 	if err := json.NewEncoder(w).Encode(grid.content); err != nil {
 		fmt.Println(err)
 	}
 }
 
-func clicked(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Content-Type", "application/json")
-
-	var data map[string]interface{}
-
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(req.Body)
-
-	if err := json.Unmarshal([]byte(buf.String()), &data); err != nil {
-		fmt.Println(err)
-	}
-
-	if data["col"] != nil && data["row"] != nil {
-		grid.HandlePlay(int(data["row"].(float64)), int(data["col"].(float64)), 1)
-
-		if err := json.NewEncoder(w).Encode(grid.content); err != nil {
-			fmt.Println(err)
+func makeIAPlay() {
+	for {
+		col := rand.Intn(3)
+		row := rand.Intn(3)
+		if false == grid.content[row][col].IsChecked {
+			grid.content[row][col].IsChecked = true
+			grid.content[row][col].ByPlayer = 2
+			grid.cellChecked++
+			break
 		}
 	}
 }
 
 func main() {
-	http.HandleFunc("/get-grid", getGrid)
-	http.HandleFunc("/clicked", clicked)
+	router := httprouter.New()
 
-	err := http.ListenAndServe(":8080", nil)
+	router.GET("/get-grid", getGrid)
+	router.POST("/clicked", clicked)
+
+	handler := cors.Default().Handler(router)
+	err := http.ListenAndServe(":8080", handler)
 
 	if err != nil {
 		fmt.Println(err)
